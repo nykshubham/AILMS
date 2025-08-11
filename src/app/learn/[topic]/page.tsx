@@ -1,9 +1,9 @@
-import type { LearningPlan, LearningModule } from "@/lib/types";
+import type { LearningPlan } from "@/lib/types";
 import { getPlaylistItems } from "@/lib/youtube";
 import ClientLearnView from "./ClientLearnView";
 import HeaderBar from "@/components/HeaderBar";
 
-type PageProps = { params: { topic: string }, searchParams?: { v?: string | string[] } };
+// Rely on Next.js generated types for page props; use any with ESLint disable to avoid mismatch
 
 async function fetchPlan(topic: string): Promise<LearningPlan> {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/learn`, {
@@ -17,22 +17,10 @@ async function fetchPlan(topic: string): Promise<LearningPlan> {
   return res.json();
 }
 
-function YouTubeEmbed({ videoId }: { videoId: string }) {
-  const url = `https://www.youtube.com/embed/${videoId}`;
-  return (
-    <div className="aspect-video w-full overflow-hidden rounded-xl border border-black/10">
-      <iframe
-        className="h-full w-full"
-        src={url}
-        title="YouTube video player"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-      />
-    </div>
-  );
-}
+// Removed unused YouTubeEmbed component
 
-export default async function LearnPage({ params, searchParams }: PageProps) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default async function LearnPage({ params, searchParams }: any) {
   const { topic } = params;
   const vParam = searchParams?.v;
   const forcedVideoId = Array.isArray(vParam) ? vParam[0] : vParam;
@@ -47,7 +35,8 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
   if (plan.mode === "playlist" && plan.playlistId) {
     try {
       const items = await getPlaylistItems(plan.playlistId);
-      const toClient = (it: any): ClientItem => ({
+      type PlaylistApiItem = { id: string; title: string; durationSeconds?: number; channelTitle?: string };
+      const toClient = (it: PlaylistApiItem): ClientItem => ({
         videoId: it.id,
         title: it.title,
         url: `https://www.youtube.com/watch?v=${it.id}&list=${plan.playlistId}`,
@@ -61,7 +50,8 @@ export default async function LearnPage({ params, searchParams }: PageProps) {
     }
   } else {
     const items = (plan.modules ?? []).flatMap((m) => m.items);
-    const toClient = (it: any): ClientItem => ({
+    type ModuleItem = { videoId: string; title: string; url?: string; durationMinutes?: number; channelTitle?: string };
+    const toClient = (it: ModuleItem): ClientItem => ({
       videoId: it.videoId,
       title: it.title,
       url: it.url ?? `https://www.youtube.com/watch?v=${it.videoId}`,

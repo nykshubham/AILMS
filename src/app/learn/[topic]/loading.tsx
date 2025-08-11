@@ -38,7 +38,11 @@ export default function Loading() {
             {/* Particles bursting outward (looped and staggered) */}
             <div className="pointer-events-none">
               {Array.from({ length: 8 }).map((_, i) => (
-                <span key={i} className={`particle`} style={{ ["--i" as any]: i } as React.CSSProperties} />
+                <span
+                  key={i}
+                  className={`particle`}
+                  style={{ ["--i" as unknown as string]: i } as React.CSSProperties}
+                />
               ))}
             </div>
           </div>

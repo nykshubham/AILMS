@@ -1,6 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+import Image from "next/image";
 import HeaderBar from "@/components/HeaderBar";
 
 export default function Home() {
@@ -9,7 +10,6 @@ export default function Home() {
   const [loadingRandom, setLoadingRandom] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   const [isSearching, startSearchTransition] = useTransition();
-  const [isNavigating, startNavTransition] = useTransition();
 
   const placeholders = [
     "Search for a course",
@@ -28,7 +28,7 @@ export default function Home() {
       setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [placeholders.length]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -113,12 +113,10 @@ export default function Home() {
   ];
 
   const handleVideoClick = (topic: string, id?: string) => {
-    startNavTransition(() => {
-      const url = id
-        ? `/learn/${encodeURIComponent(topic)}?v=${encodeURIComponent(id)}`
-        : `/learn/${encodeURIComponent(topic)}`;
-      router.push(url);
-    });
+    const url = id
+      ? `/learn/${encodeURIComponent(topic)}?v=${encodeURIComponent(id)}`
+      : `/learn/${encodeURIComponent(topic)}`;
+    router.push(url);
   };
 
   return (
@@ -237,15 +235,13 @@ export default function Home() {
                 className="group text-left w-full"
               >
                 <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-white/20 bg-white/5">
-                  <img
+                  <Image
                     src={v.thumbnail}
                     alt={v.title}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                    loading="lazy"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`;
-                    }}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                    unoptimized
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                   <div className="absolute right-3 bottom-3 px-2 py-1 rounded bg-black/60 text-white text-xs border border-white/20">

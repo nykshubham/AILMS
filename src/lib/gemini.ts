@@ -69,7 +69,7 @@ No markdown. No commentary.`;
     };
     try {
       parsed = JSON.parse(text);
-    } catch (_error) {
+    } catch {
       console.error("Gemini returned non-JSON content:", text);
       throw new Error("Gemini returned non-JSON content");
     }

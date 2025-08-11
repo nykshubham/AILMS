@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         const result = await model.generateContent(prompt);
         const text = result.response.text().trim();
         if (text) return NextResponse.json({ answer: text });
-      } catch (err) {
+      } catch {
         // fall through to simple fallback
       }
     }
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       answer: `I can't reach the AI right now. Based on the topic ${topic ? `"${topic}"` : "(unspecified)"}, try asking a more specific question or a step-by-step task to get a practical answer.`,
     });
-  } catch (e) {
+  } catch {
     return NextResponse.json({ answer: "Sorry, I ran into an issue answering that question." }, { status: 200 });
   }
 }

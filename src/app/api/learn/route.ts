@@ -21,6 +21,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 1) Try to find a good existing playlist
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let playlists: any[] = [];
     try {
       playlists = await searchPlaylists(topic);
@@ -52,6 +53,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 2) Fallback: curate from top videos
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let videos: any[] = [];
     try {
       videos = await searchVideos(topic);

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 
 type RelatedItem = {
   videoId: string;
@@ -63,7 +64,7 @@ export default function ClientLearnView({ mode, playlistId, playlistTitle, playl
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") return "";
     return window.location.href;
-  }, [current?.videoId]);
+  }, []);
 
   const askGemini = async () => {
     const q = question.trim();
@@ -75,7 +76,7 @@ export default function ClientLearnView({ mode, playlistId, playlistTitle, playl
       const res = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: q, topic, videoId: current?.videoId }),
+        body: JSON.stringify({ question: q, topic }),
       });
       const json = await res.json();
       const a = (json?.answer ?? "").toString();
@@ -229,7 +230,7 @@ export default function ClientLearnView({ mode, playlistId, playlistTitle, playl
           <h2 className="text-white font-medium">Ask the AI</h2>
           <div className="flex-1 overflow-y-auto rounded-lg border border-white/15 bg-black/30 p-3 space-y-3">
             {messages.length === 0 ? (
-              <p className="text-sm text-white/60">Ask anything about this video. I'll use the transcript/context to help.</p>
+              <p className="text-sm text-white/60">Ask anything about this topic. I&apos;ll help.</p>
             ) : (
               messages.map((m, i) => (
                 <div key={i} className={m.role === "user" ? "text-white" : "text-white/80"}>
@@ -321,12 +322,14 @@ export default function ClientLearnView({ mode, playlistId, playlistTitle, playl
                     isActive ? "border-purple-400/50 bg-purple-500/10" : "border-white/15 bg-black/30 hover:border-white/30"
                   }`}
                 >
-                  <div className="w-24 aspect-video overflow-hidden rounded bg-white/10">
-                    <img
+                  <div className="w-24 aspect-video overflow-hidden rounded bg-white/10 relative">
+                    <Image
                       src={`https://i.ytimg.com/vi/${item.videoId}/hqdefault.jpg`}
                       alt={item.title}
-                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-                      loading="lazy"
+                      fill
+                      sizes="96px"
+                      className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                      unoptimized
                     />
                   </div>
                   <div className="min-w-0">
